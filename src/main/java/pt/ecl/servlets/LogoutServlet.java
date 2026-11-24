@@ -1,0 +1,3 @@
+package pt.ecl.servlets;
+import jakarta.servlet.annotation.WebServlet;import jakarta.servlet.http.*;import java.io.IOException;
+@WebServlet("/logout") public class LogoutServlet extends HttpServlet { @Override protected void doGet(HttpServletRequest r,HttpServletResponse s)throws IOException{HttpSession x=r.getSession(false);if(x!=null)x.invalidate();s.sendRedirect("index.jsp");} }
