@@ -1,4 +1,189 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %><%@ page import="java.util.*" %><%@ page import="pt.ecl.model.Curso" %>
-<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Pré-inscrição | PortalECL</title><link rel="stylesheet" href="css/estilo.css"></head><body><header class="topo"><a class="marca" href="index.jsp"><span class="marca-simbolo">E</span><span>Portal<strong>ECL</strong><small>Escola de Comércio de Lisboa</small></span></a><nav><a href="index.jsp">Início</a><a href="cursos">Cursos</a><a class="ativo" href="pre-inscricao.jsp">Pré-inscrição</a><a href="reportar-avaria.jsp">Assistência</a></nav></header><main class="pagina-form"><div class="form-intro"><span class="etiqueta">CANDIDATURA</span><h1>Pré-inscrição</h1><p>Preenche o formulário para manifestar o teu interesse. A equipa poderá entrar em contacto através dos dados indicados.</p></div>
-<% if("1".equals(request.getParameter("sucesso"))){ %><div class="alerta sucesso">A tua pré-inscrição foi registada com sucesso.</div><% } if("dados".equals(request.getParameter("erro"))){ %><div class="alerta erro">Verifica os campos obrigatórios e o endereço de email.</div><% } %>
-<form class="formulario" action="pre-inscricao" method="post"><div class="grelha-form"><div><label for="nome">Nome completo *</label><input id="nome" name="nome" required maxlength="120" autocomplete="name"></div><div><label for="email">Email *</label><input id="email" name="email" type="email" required maxlength="150" autocomplete="email"></div><div><label for="telefone">Telefone</label><input id="telefone" name="telefone" type="tel" maxlength="30" autocomplete="tel"></div><div><label for="curso">Curso pretendido *</label><select id="curso" name="curso" required><option value="">Seleciona um curso</option><% try { Class.forName("com.mysql.cj.jdbc.Driver"); java.sql.Connection c=pt.ecl.config.ConexaoBD.ligar(); java.sql.PreparedStatement ps=c.prepareStatement("SELECT id_curso,nome FROM cursos WHERE ativo=1 ORDER BY nome"); java.sql.ResultSet rs=ps.executeQuery(); while(rs.next()){ %><option value="<%=rs.getInt("id_curso")%>"><%=rs.getString("nome")%></option><% } rs.close();ps.close();c.close(); } catch(Exception e) { %><% } %></select></div></div><label for="mensagem">Mensagem (opcional)</label><textarea id="mensagem" name="mensagem" rows="4" maxlength="1000" placeholder="Partilha alguma informação adicional..."></textarea><p class="nota-form">* Campos de preenchimento obrigatório.</p><button class="botao" type="submit">Enviar pré-inscrição <span>→</span></button></form></main><footer><div><strong>PortalECL</strong><span>Projeto académico demonstrativo.</span></div></footer></body></html>
+
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.util.*" %>
+<%@ page import="pt.ecl.model.Curso" %>
+
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pré-inscrição | PortalECL</title>
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+
+<body>
+
+<header class="topo">
+    <a class="marca" href="index.jsp">
+        <span class="marca-simbolo">E</span>
+        <span>
+            Portal<strong>ECL</strong>
+            <small>Escola de Comércio de Lisboa</small>
+        </span>
+    </a>
+
+    <nav>
+        <a href="index.jsp">Início</a>
+        <a href="cursos">Cursos</a>
+        <a class="ativo" href="pre-inscricao.jsp">Pré-inscrição</a>
+        <a href="reportar-avaria.jsp">Assistência</a>
+    </nav>
+</header>
+
+<main class="pagina-form">
+
+    <div class="form-intro">
+        <span class="etiqueta">CANDIDATURA</span>
+        <h1>Pré-inscrição</h1>
+        <p>
+            Preenche o formulário para manifestar o teu interesse.
+            A equipa poderá entrar em contacto através dos dados indicados.
+        </p>
+    </div>
+
+    <% if ("1".equals(request.getParameter("sucesso"))) { %>
+        <div class="alerta sucesso">
+            A tua pré-inscrição foi registada com sucesso.
+        </div>
+    <% } %>
+
+    <% if ("dados".equals(request.getParameter("erro"))) { %>
+        <div class="alerta erro">
+            Verifica os campos obrigatórios e o endereço de email.
+        </div>
+    <% } %>
+
+    <% if ("privacidade".equals(request.getParameter("erro"))) { %>
+        <div class="alerta erro">
+            Tens de aceitar a política de privacidade para continuar.
+        </div>
+    <% } %>
+
+    <form class="formulario" action="pre-inscricao" method="post">
+
+        <div class="grelha-form">
+
+            <div>
+                <label for="nome">Nome completo *</label>
+                <input
+                    id="nome"
+                    name="nome"
+                    required
+                    maxlength="120"
+                    autocomplete="name">
+            </div>
+
+            <div>
+                <label for="email">Email *</label>
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    maxlength="150"
+                    autocomplete="email">
+            </div>
+
+            <div>
+                <label for="telefone">Telefone</label>
+                <input
+                    id="telefone"
+                    name="telefone"
+                    type="tel"
+                    maxlength="30"
+                    autocomplete="tel">
+            </div>
+
+            <div>
+                <label for="curso">Curso pretendido *</label>
+
+                <select id="curso" name="curso" required>
+                    <option value="">Seleciona um curso</option>
+
+                    <%
+                    try {
+                        Class.forName("com.mysql.cj.jdbc.Driver");
+
+                        java.sql.Connection c =
+                            pt.ecl.config.ConexaoBD.ligar();
+
+                        java.sql.PreparedStatement ps =
+                            c.prepareStatement(
+                                "SELECT id_curso, nome FROM cursos " +
+                                "WHERE ativo=1 ORDER BY nome"
+                            );
+
+                        java.sql.ResultSet rs = ps.executeQuery();
+
+                        while (rs.next()) {
+                    %>
+
+                        <option value="<%= rs.getInt("id_curso") %>">
+                            <%= rs.getString("nome") %>
+                        </option>
+
+                    <%
+                        }
+
+                        rs.close();
+                        ps.close();
+                        c.close();
+
+                    } catch (Exception e) {
+                        application.log(
+                            "Erro ao carregar cursos para pré-inscrição", e
+                        );
+                    }
+                    %>
+
+                </select>
+            </div>
+
+        </div>
+
+        <label for="mensagem">Mensagem (opcional)</label>
+
+        <textarea
+            id="mensagem"
+            name="mensagem"
+            rows="4"
+            maxlength="1000"
+            placeholder="Partilha alguma informação adicional..."></textarea>
+
+        <!-- ACEITACAO DA POLITICA DE PRIVACIDADE -->
+
+        <div class="privacidade-form">
+            <label for="aceita_privacidade">
+                <input
+                    type="checkbox"
+                    id="aceita_privacidade"
+                    name="aceita_privacidade"
+                    value="true"
+                    required>
+                Li e aceito a política de privacidade.
+            </label>
+        </div>
+
+        <p class="nota-form">
+            * Campos de preenchimento obrigatório.
+        </p>
+
+        <button class="botao" type="submit">
+            Enviar pré-inscrição <span>→</span>
+        </button>
+
+    </form>
+
+</main>
+
+<footer>
+    <div>
+        <strong>PortalECL</strong>
+        <span>Projeto académico demonstrativo.</span>
+    </div>
+</footer>
+
+</body>
+</html>
